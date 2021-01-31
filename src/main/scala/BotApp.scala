@@ -5,7 +5,7 @@ import cats.effect.{ExitCode, IO, IOApp}
 object BotApp extends IOApp {
 
   val token: String = System.getenv("TELEGRAM_TOKEN")
-  val url: String = "https://4f1fe551d6d1.ngrok.io"
+  val url: String = s"https://${System.getenv("NGROK_ID")}.ngrok.io"
 
   def run(args: List[String]): IO[ExitCode] =
     fs2.Stream
@@ -17,13 +17,11 @@ object BotApp extends IOApp {
       .drain
       .as(ExitCode.Success)
 
-
+  val activities = List("1", "2", "3")
   def echos[F[_]: TelegramClient]: Scenario[F, Unit] =
     for {
-      // Si se pasa el command(podemos escribir respuestas a comandos)
-      // msg <- Scenario.expect(command("callback"))
       msg <- Scenario.expect(any)
-      _   <- Scenario.eval(msg.chat.send(content = "PATATASSSS!!!!"))
+      _   <- Scenario.eval(msg.chat.send(content = Activities("Comer", "Dormir", "Leer").toString))
     } yield ()
 
 }
